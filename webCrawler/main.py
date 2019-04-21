@@ -4,9 +4,12 @@ from spider import Spider
 from domain import *
 from general import *
 import mysql.connector
+import socket
+import socks
+import sys
 
 PROJECT_NAME = 'startpagina'
-HOMEPAGE = 'http://startpagina.nl/'
+HOMEPAGE = 'http://facebookcorewwwi.onion'
 DOMAIN_NAME = get_domain_name(HOMEPAGE)
 NUMBER_OF_THREADS = 12
 queue = Queue()
@@ -73,6 +76,20 @@ def crawl():
         print(str(len(queued_links)) + ' links in the queue')
         create_jobs()
 
+def connectTor():
+    try:
+      SOCKS_PORT = 9050
+      # Set socks proxy and wrap the urllib module
+      socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', SOCKS_PORT)
+      socket.socket = socks.socksocket
+      # Perform DNS resolution through the socket
+      def getaddrinfo(*args):
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+      socket.getaddrinfo = getaddrinfo
+    except:
+      e = sys.exc_info()[0]
+      print("Error: %s" % e +"\n## Can't establish connection with TOR")
 
+connectTor()
 create_workers()
 crawl()

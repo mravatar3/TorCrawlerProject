@@ -59,7 +59,7 @@ class Spider:
             cursor.close()
 
         # Hier halen we de queue link uit de MySQL queue tabel
-        Spider.queue.remove(page_url)
+        # Spider.queue.remove(page_url)
         sql_delete_query = "DELETE FROM project.queue WHERE link = '" + page_url + "';"
         cursor = mysqlConnect.cursor()
         cursor.execute(sql_delete_query)
