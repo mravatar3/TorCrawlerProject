@@ -1,7 +1,6 @@
-from urllib.request import urlopen
+import urllib.request
 from link_finder import LinkFinder
 from domain import *
-from general import *
 import mysql.connector
 
 class Spider:
@@ -16,26 +15,23 @@ class Spider:
     host = "192.168.0.33"
     user = "projectUser"
     passwd = "Anusklep20!"
+    proxy_support = urllib.request.ProxyHandler({'http': 'http://127.0.0.1:8118',
+                                                 'https': 'https://127.0.0.1:8118'})
 
     def __init__(self, project_name, base_url, domain_name):
         Spider.project_name = project_name
         Spider.base_url = base_url
         Spider.domain_name = domain_name
         self.boot()
-        self.crawl_page('First spider', Spider.base_url)
+        self.crawl_page('Eerste crawler: ', Spider.base_url)
 
-    # Creates directory and files for project on first run and starts the spider
     @staticmethod
     def boot():
-        create_project_dir(Spider.project_name)
-        create_data_files(Spider.project_name, Spider.base_url)
+        print('De banenplukkers worden gestart (workers)')
 
-
-    # Updates user display, fills queue and updates files
     @staticmethod
     def crawl_page(thread_name, page_url):
         # hier controleren of de pagina URL niet al in de cralwed tabel staat van MySQL anders krijgen we dubbelen
-
         mysqlConnect = mysql.connector.connect(database=Spider.database, host=Spider.host, user=Spider.user,
                                                passwd=Spider.passwd, auth_plugin='mysql_native_password')
         sqlTest = "select link from project.crawled WHERE link = '" + page_url + "';"
@@ -48,7 +44,7 @@ class Spider:
             print('Pagina is al gecrawled drop! do nothing')
         else:
             print(thread_name + ' now crawling ' + page_url)
-            print('Queue ' + str(len(Spider.queue)) + ' | Crawled  ' + str(len(Spider.crawled)))
+            print('Wachtrij: ' + str(len(Spider.queue)) + ' | Crawled:  ' + str(len(Spider.crawled)))
             Spider.add_links_to_queue(Spider.gather_links(page_url))
 
             # Hier vullen we de MySQL crawled tabel met links die verwerkt zijn
@@ -71,10 +67,12 @@ class Spider:
     def gather_links(page_url):
         html_string = ''
         try:
-            response = urlopen(page_url)
-            if 'text/html' in response.getheader('Content-Type'):
-                html_bytes = response.read()
-                html_string = html_bytes.decode("utf-8")
+            response = urllib.request.build_opener(Spider.proxy_support)
+            urllib.request.install_opener(response)
+            with urllib.request.urlopen(page_url) as response:
+                if 'text/html' in response.getheader('Content-Type'):
+                    html_bytes = response.read()
+                    html_string = html_bytes.decode("utf-8")
             finder = LinkFinder(Spider.base_url, page_url)
             finder.feed(html_string)
         except Exception as e:

@@ -2,16 +2,12 @@ import threading
 from queue import Queue
 from spider import Spider
 from domain import *
-from general import *
 import mysql.connector
-import socket
-import socks
-import sys
 
 PROJECT_NAME = 'startpagina'
-HOMEPAGE = 'http://facebookcorewwwi.onion'
+HOMEPAGE = 'http://startpagina.nl'
 DOMAIN_NAME = get_domain_name(HOMEPAGE)
-NUMBER_OF_THREADS = 12
+NUMBER_OF_THREADS = 64
 queue = Queue()
 Spider(PROJECT_NAME, HOMEPAGE, DOMAIN_NAME)
 
@@ -73,23 +69,8 @@ def crawl():
 
     queued_links = wachtrijURL
     if len(queued_links) > 0:
-        print(str(len(queued_links)) + ' links in the queue')
+        print(str(len(queued_links)) + ' links in de wachtrij')
         create_jobs()
 
-def connectTor():
-    try:
-      SOCKS_PORT = 9050
-      # Set socks proxy and wrap the urllib module
-      socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', SOCKS_PORT)
-      socket.socket = socks.socksocket
-      # Perform DNS resolution through the socket
-      def getaddrinfo(*args):
-        return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
-      socket.getaddrinfo = getaddrinfo
-    except:
-      e = sys.exc_info()[0]
-      print("Error: %s" % e +"\n## Can't establish connection with TOR")
-
-connectTor()
 create_workers()
 crawl()
