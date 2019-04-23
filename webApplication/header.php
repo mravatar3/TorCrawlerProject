@@ -18,6 +18,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
   <link rel="stylesheet" type="text/css" href="style.css"/>
   <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
   </head>
    
 <body>
@@ -25,10 +26,11 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <div class="topnav">
   <a class="active" href="basis.php">Crawler</a>
   <a href="statistics.php">Statistics</a>
+  <a href="index.php">Start a crawler</a>
   <div class="search-container">
     <form action="/basis.php">
-      <input type="text" placeholder="Search.." name="search">
-      <button type="submit">Submit</button>
+      <input type="text" placeholder="Zoeken.." name="search">
+      <button type="submit">Zoeken</button>
     </form>
   </div>
 </div>
