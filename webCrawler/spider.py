@@ -2,6 +2,8 @@ import urllib.request
 from link_finder import LinkFinder
 from domain import *
 import mysql.connector
+from bs4 import BeautifulSoup
+import re
 
 class Spider:
     project_name = ''
@@ -48,7 +50,8 @@ class Spider:
             Spider.add_links_to_queue(Spider.gather_links(page_url))
 
             # Hier vullen we de MySQL crawled tabel met links die verwerkt zijn
-            sql_insert_query = "INSERT INTO project.crawled(link) VALUES ('"+page_url+"');"
+            sql_insert_query = "INSERT INTO project.crawled(link, content) VALUES ('"+page_url+"', "+repr(Spider.text_grabber(page_url))+");"
+            print(sql_insert_query)
             cursor = mysqlConnect.cursor()
             cursor.execute(sql_insert_query)
             mysqlConnect.commit()
@@ -99,3 +102,33 @@ class Spider:
             mysqlConnect.commit()
             cursor.close()
             mysqlConnect.close()
+
+    @staticmethod
+    def text_grabber(paginaurl):
+
+        response = urllib.request.build_opener(Spider.proxy_support)
+        urllib.request.install_opener(response)
+        with urllib.request.urlopen(paginaurl) as response:
+            if 'text/html' in response.getheader('Content-Type'):
+                html_bytes = response.read()
+                html = html_bytes.decode("utf-8")
+
+        cleanhtml = Spider.clean_html(html)
+        zonderspaties = " ".join(re.split(r"\s+", cleanhtml))
+        tekstdb = BeautifulSoup(zonderspaties, "lxml")
+        return(tekstdb.get_text())
+
+    @staticmethod
+    def clean_html(html):
+        # First we remove inline JavaScript/CSS:
+        cleaned = re.sub(r"(?is)<(script|style).*?>.*?(</\1>)", "", html.strip())
+        # Then we remove html comments. This has to be done before removing regular
+        # tags since comments can contain '>' characters.
+        cleaned = re.sub(r"(?s)<!--(.*?)-->[\n]?", "", cleaned)
+        # Next we can remove the remaining tags:
+        cleaned = re.sub(r"(?s)<.*?>", " ", cleaned)
+        # Finally, we deal with whitespace
+        cleaned = re.sub(r"&nbsp;", " ", cleaned)
+        cleaned = re.sub(r"  ", " ", cleaned)
+        cleaned = re.sub(r"  ", " ", cleaned)
+        return cleaned.strip()
