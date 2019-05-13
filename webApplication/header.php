@@ -24,13 +24,16 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <body>
   
 <div class="topnav">
-  <a class="active" href="basis.php">Crawler</a>
-  <a href="statistics.php">Statistics</a>
+  <a class="active" href="basis.php">Home</a>
   <a href="index.php">Start a crawler</a>
+  <a href="statistics.php">Statistics</a>
+  <a href="searchresults.php">Threats Zoeken</a>
   <div class="search-container">
-    <form action="/basis.php">
-      <input type="text" placeholder="Zoeken.." name="search">
+    <form name="form1" method="post" action="searchresults.php" >
+      <input type="text" placeholder="Threats zoeken..." name="search">
       <button type="submit">Zoeken</button>
     </form>
   </div>
+  
+ 
 </div>

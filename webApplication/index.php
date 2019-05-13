@@ -28,7 +28,11 @@
                         <input id="url" name="url" type="text" placeholder="URL to crawl" required <?php if(isset($output)) { echo "disabled"; }?>>
                         <span class="pure-form-message-inline">Dit is verplicht!</span>
                     </div>
-
+					<br>
+					<div >
+                        <span class="pure-form-message-inline" style="margin-left: 178px;" >Alleen benodigd voor het inloggen op een forum.</span>
+                    </div>
+					
                     <div class="pure-control-group">
                         <label for="username">Gebruikersnaam:</label>
                         <input id="username" type="text" placeholder="Gebruikersnaam" <?php if(isset($output)) { echo "disabled"; }?>>
