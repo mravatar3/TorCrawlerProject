@@ -4,10 +4,11 @@ from domain import *
 import mysql.connector
 from bs4 import BeautifulSoup
 import re
+import time
 
 class Spider:
     project_name = ''
-    base_url = 'https://startpagina.nl'
+    base_url = 'https://marktplaats.nl'
     domain_name = ''
     queue_file = ''
     crawled_file = ''
@@ -50,7 +51,7 @@ class Spider:
             Spider.add_links_to_queue(Spider.gather_links(page_url))
 
             # Hier vullen we de MySQL crawled tabel met links die verwerkt zijn
-            sql_insert_query = "INSERT INTO project.crawled(link, content) VALUES ('"+page_url+"', "+repr(Spider.text_grabber(page_url))+");"
+            sql_insert_query = "INSERT INTO project.crawled(link, content, date) VALUES ('"+page_url+"', "+repr(Spider.text_grabber(page_url))+", '"+time.strftime('%Y-%m-%d %H:%M:%S')+"');"
             print(sql_insert_query)
             cursor = mysqlConnect.cursor()
             cursor.execute(sql_insert_query)

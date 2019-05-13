@@ -5,7 +5,7 @@ from domain import *
 import mysql.connector
 
 PROJECT_NAME = 'startpagina'
-HOMEPAGE = 'http://startpagina.nl'
+HOMEPAGE = 'http://marktplaats.nl/'
 DOMAIN_NAME = get_domain_name(HOMEPAGE)
 NUMBER_OF_THREADS = 64
 queue = Queue()
