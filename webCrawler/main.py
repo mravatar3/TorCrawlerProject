@@ -3,9 +3,10 @@ from queue import Queue
 from spider import Spider
 from domain import *
 import mysql.connector
+import sys
 
 PROJECT_NAME = 'startpagina'
-HOMEPAGE = 'http://marktplaats.nl/'
+HOMEPAGE = str(sys.argv[1])
 DOMAIN_NAME = get_domain_name(HOMEPAGE)
 NUMBER_OF_THREADS = 64
 queue = Queue()

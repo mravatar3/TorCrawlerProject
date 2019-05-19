@@ -4,11 +4,12 @@ from domain import *
 import mysql.connector
 from bs4 import BeautifulSoup
 import re
+import sys
 import time
 
 class Spider:
     project_name = ''
-    base_url = 'https://marktplaats.nl'
+    base_url = str(sys.argv[1])
     domain_name = ''
     queue_file = ''
     crawled_file = ''
@@ -50,8 +51,18 @@ class Spider:
             print('Wachtrij: ' + str(len(Spider.queue)) + ' | Crawled:  ' + str(len(Spider.crawled)))
             Spider.add_links_to_queue(Spider.gather_links(page_url))
 
+            response = urllib.request.build_opener(Spider.proxy_support)
+            urllib.request.install_opener(response)
+            with urllib.request.urlopen(page_url) as response:
+                if 'text/html' in response.getheader('Content-Type'):
+                    html_bytes = response.read()
+                    html = html_bytes.decode("utf-8")
+                    match = re.search('<title>(.*?)</title>', html)
+                    title = match.group(1) if match else 'No title'
+                    print(title)
+
             # Hier vullen we de MySQL crawled tabel met links die verwerkt zijn
-            sql_insert_query = "INSERT INTO project.crawled(link, content, date) VALUES ('"+page_url+"', "+repr(Spider.text_grabber(page_url))+", '"+time.strftime('%Y-%m-%d %H:%M:%S')+"');"
+            sql_insert_query = "INSERT INTO project.crawled(link, content, date, title) VALUES ('"+page_url+"', "+repr(Spider.text_grabber(page_url))+", '"+time.strftime('%Y-%m-%d %H:%M:%S')+"', '"+title+"');"
             print(sql_insert_query)
             cursor = mysqlConnect.cursor()
             cursor.execute(sql_insert_query)
