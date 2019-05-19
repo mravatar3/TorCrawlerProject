@@ -59,7 +59,6 @@ class Spider:
                     html = html_bytes.decode("utf-8")
                     match = re.search('<title>(.*?)</title>', html)
                     title = match.group(1) if match else 'No title'
-                    print(title)
 
             # Hier vullen we de MySQL crawled tabel met links die verwerkt zijn
             sql_insert_query = "INSERT INTO project.crawled(link, content, date, title) VALUES ('"+page_url+"', "+repr(Spider.text_grabber(page_url))+", '"+time.strftime('%Y-%m-%d %H:%M:%S')+"', '"+title+"');"
