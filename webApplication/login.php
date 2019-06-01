@@ -14,6 +14,7 @@ require_once "config.php";
 // Define variables and initialize with empty values
 $username = $password = "";
 $username_err = $password_err = "";
+$fp = fopen("var/www/html/crawler/startpagina/loginfailures.txt", "w");
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -68,6 +69,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         } else{
                             // Display an error message if password is not valid
                             $password_err = "Het wachtwoord is niet goed, probeer je mij te hacken?";
+                            fwrite($fp, date("h:i a"));
+                            fwrite($fp, .$_SERVER['REMOTE_ADDR']);
+                            fwrite($fp, $username);
+                            fwrite($fp, $password);
+
+
                         }
                     }
                 } else{
