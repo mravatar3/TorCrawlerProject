@@ -5,12 +5,11 @@ from domain import *
 import mysql.connector
 import sys
 
-PROJECT_NAME = 'startpagina'
 HOMEPAGE = str(sys.argv[1])
 DOMAIN_NAME = get_domain_name(HOMEPAGE)
 NUMBER_OF_THREADS = 64
 queue = Queue()
-Spider(PROJECT_NAME, HOMEPAGE, DOMAIN_NAME)
+Spider(HOMEPAGE, DOMAIN_NAME)
 
 # Create worker threads (will die when main exits)
 def create_workers():
@@ -19,14 +18,12 @@ def create_workers():
         t.daemon = True
         t.start()
 
-
 # Do the next job in the queue
 def work():
     while True:
         url = queue.get()
         Spider.crawl_page(threading.current_thread().name, url)
         queue.task_done()
-
 
 # Each queued link is a new job
 def create_jobs():
@@ -50,7 +47,6 @@ def create_jobs():
     queue.join()
     crawl()
 
-
 # Check if there are items in the queue, if so crawl them
 def crawl():
     mySQLConnection = mysql.connector.connect(
@@ -60,7 +56,6 @@ def crawl():
         passwd="Anusklep20!",
         auth_plugin='mysql_native_password'
     )
-
     sqlTest = "select link from project.queue"
     cursor = mySQLConnection.cursor()
     cursor.execute(sqlTest)
